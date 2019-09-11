@@ -21,3 +21,7 @@ jobs:
     #  with: 
     #    app-name: node-rn
     #    publish-profile: ${{ secrets.azureWebAppPublishProfile }}
+    
+    #-uses = "actions/aws/cli@master"
+    # args = 
+    # secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
