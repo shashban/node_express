@@ -15,20 +15,19 @@ jobs:
         npm install
         npm run build --if-present
         npm run test --if-present
-        
-    # install eb cli
-    - name: install using pip
-      run: |
-        pip --version
-        pip install awsebcli --upgrade --user
-        eb --version    
-        
+  
+    #- name: 'Login via Azure CLI'
+    #  uses: azure/actions/login@master
+    #  with:
+    #    creds: ${{ secrets.AZURE_CREDENTIALS }}
+     
     # deploy web app using publish profile credentials
     #- uses: azure/webapps-deploy@master
     #  with: 
     #    app-name: node-rn
     #    publish-profile: ${{ secrets.azureWebAppPublishProfile }}
     
-    #-uses = "actions/aws/cli@master"
-    # args = 
-    # secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
+    #- name: 'AWS CLI'
+    #  uses = "actions/aws/cli@master"
+    #  args = 
+    #  secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
