@@ -14,8 +14,8 @@ jobs:
         npm install
         npm run build --if-present
         npm run test --if-present
-  
-     - name: 'Deploy web app using publish profile credentials'
+    
+    - name: 'Deploy web app using publish profile credentials'
       uses: azure/webapps-deploy@master
       with: 
         app-name: node-rn
