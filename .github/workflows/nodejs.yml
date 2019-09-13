@@ -1,6 +1,6 @@
 on: push
 
-name: Build and deploy Node app
+name: Build and deploy Node app to Azure Web App
 
 jobs:
   build-and-deploy:
