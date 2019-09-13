@@ -9,25 +9,14 @@ jobs:
     # checkout the repo
     - uses: actions/checkout@master
     
-    # install dependencies, build, and test
     - name: npm install, build, and test
       run: |
         npm install
         npm run build --if-present
         npm run test --if-present
   
-    #- name: 'Login via Azure CLI'
-    #  uses: azure/actions/login@master
-    #  with:
-    #    creds: ${{ secrets.AZURE_CREDENTIALS }}
-     
-    # deploy web app using publish profile credentials
-    #- uses: azure/webapps-deploy@master
-    #  with: 
-    #    app-name: node-rn
-    #    publish-profile: ${{ secrets.azureWebAppPublishProfile }}
-    
-    #- name: 'AWS CLI'
-    #  uses = "actions/aws/cli@master"
-    #  args = 
-    #  secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
+     - name: 'Deploy web app using publish profile credentials'
+      uses: azure/webapps-deploy@master
+      with: 
+        app-name: node-rn
+        publish-profile: ${{ secrets.azureWebAppPublishProfile }}  
