@@ -9,12 +9,14 @@ jobs:
 
     #checkout and Zip
     - uses: actions/checkout@master
-    - run: |
+    - name: Zip the contents using Run
+      run: |
         git archive -v -o NodeExpressSampleApp.1.zip --format=zip HEAD
         pwd
         ls
     #copy files to s3 bucket
-    - uses: actions/aws/cli@master 
+    - name: Use AWS Action to Copy the zip to s3 bucket
+      uses: actions/aws/cli@master 
       with:
         args: s3 cp NodeExpressSampleApp.1.zip s3://elasticbeanstalk-us-east-2-653237029202/ 
       env:
@@ -23,18 +25,20 @@ jobs:
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
     
     #create application
-    - uses: actions/aws/cli@master 
+    - name: Use AWS Action to Create a new version for ElasticBeanstalk Application
+      uses: actions/aws/cli@master 
       with:
-        args: elasticbeanstalk create-application-version --application-name Node_demo --version-label v0.1 --description NodeAppv1 --source-bundle S3Bucket="elasticbeanstalk-us-east-2-653237029202",S3Key="NodeExpressSampleApp.1.zip"
+        args: elasticbeanstalk create-application-version --application-name Node_demo --version-label v0.2 --description NodeAppv1 --source-bundle S3Bucket="elasticbeanstalk-us-east-2-653237029202",S3Key="NodeExpressSampleApp.1.zip"
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
     #deploy elasticbeanstalk
-    - uses: actions/aws/cli@master 
+    - name: Use AWS Action to Deploy the new version for ElasticBeanstalk Application by updating the envionment
+      uses: actions/aws/cli@master 
       with:
-        args: elasticbeanstalk update-environment --application-name Node_demo --environment-name NodeDemo-env --version-label v0.1
+        args: elasticbeanstalk update-environment --application-name Node_demo --environment-name NodeDemo-env --version-label v0.2
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
