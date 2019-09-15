@@ -28,7 +28,7 @@ jobs:
     - name: Use AWS Action to Create a new version for ElasticBeanstalk Application
       uses: actions/aws/cli@master 
       with:
-        args: elasticbeanstalk create-application-version --application-name Node_demo --version-label v0.2 --description NodeAppv1 --source-bundle S3Bucket="elasticbeanstalk-us-east-2-653237029202",S3Key="NodeExpressSampleApp.1.zip"
+        args: elasticbeanstalk create-application-version --application-name Node_demo --version-label v1.0 --description NodeAppv1 --source-bundle S3Bucket="elasticbeanstalk-us-east-2-653237029202",S3Key="NodeExpressSampleApp.1.zip"
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -38,7 +38,7 @@ jobs:
     - name: Use AWS Action to Deploy the new version for ElasticBeanstalk Application by updating the envionment
       uses: actions/aws/cli@master 
       with:
-        args: elasticbeanstalk update-environment --application-name Node_demo --environment-name NodeDemo-env --version-label v0.2
+        args: elasticbeanstalk update-environment --application-name Node_demo --environment-name NodeDemo-env --version-label v1.0
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
