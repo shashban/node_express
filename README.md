@@ -2,7 +2,7 @@
 
 Sample workflow to build and deploy node js app. 
 
-#### Deploy with app-level credentials
+### Deploy with app-level credentials
 
 ```yaml
 
