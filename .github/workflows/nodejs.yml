@@ -44,11 +44,12 @@ jobs:
         inlineScript: |
           az account show
           az storage -h
-          az webapp create --resource-group $AZURE_RESOURCE_GROUP --plan $AZURE_APP_PLAN --name $AZURE_WEBAPP_NAME
+          az webapp create --resource-group ActionsDemo --plan ActionPlan --name AppWithContainer1
+        # az webapp create --resource-group $AZURE_RESOURCE_GROUP --plan $AZURE_APP_PLAN --name $AZURE_WEBAPP_NAME
           
     - uses: azure/webapps-container-deploy@v1
       with: 
-        app-name: $AZURE_WEBAPP_NAME  
+        app-name: AppWithContainer1 
         images: 'actionregistry.azurecr.io/nodejsapp:${{ github.sha }}'
     
   deploy-to-Prod:
