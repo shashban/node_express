@@ -20,14 +20,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    
+    - run: |
+        echo $CONTAINER_REGISTRY/nodejsapp:${{ github.sha }
+        
      # Authentication
     - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     - uses: azure/docker-login@v1
       with:
-        login-server: $CONTAINER_REGISTRY
+        login-server: actionregistry.azurecr.io 
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
     
