@@ -33,8 +33,8 @@ jobs:
     
     # Authentication
     - run: |
-        docker build . -t ${{ CONTAINER_REGISTRY }}/nodejsapp:${{ github.sha }}
-        docker push ${{ CONTAINER_REGISTRY }}/nodejsapp:${{ github.sha }}
+        docker build . -t actionregistry.azurecr.io/nodejsapp:${{ github.sha }}
+        docker push actionregistry.azurecr.io/nodejsapp:${{ github.sha }}
         
     # Provision a new Web App
     - name: Azure CLI script to create a new Web App for Container
@@ -49,7 +49,7 @@ jobs:
     - uses: azure/webapps-container-deploy@v1
       with: 
         app-name: AZURE_WEBAPP_NAME  
-        images: '${{ CONTAINER_REGISTRY }}/nodejsapp:${{ github.sha }}'
+        images: 'actionregistry.azurecr.io/nodejsapp:${{ github.sha }}'
     
   deploy-to-Prod:
     needs: build-and-deploy-to-dev
