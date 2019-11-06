@@ -23,7 +23,7 @@ jobs:
     - run: |
         echo $CONTAINER_REGISTRY/nodejsapp:${{ github.sha }}
         
-     # Authentication
+    # Authentication
     - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
