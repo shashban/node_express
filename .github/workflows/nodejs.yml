@@ -11,7 +11,7 @@ on: push
 # 2. Change these variables for your configuration:
 env:
   AZURE_RESOURCE_GROUP: ActionsDemo   # set this to your Azure Resource group's name  
-  AZURE_WEBAPP_NAME: AppWithContainer   # set this to your application's name
+  AZURE_WEBAPP_NAME: AppWithContainer1   # set this to your application's name
   AZURE_APP_PLAN: ActionPlan  # set this to your App service plan's name
   CONTAINER_REGISTRY: actionregistry.azurecr.io   # set this to the path to your web app project, defaults to the repository root 
 
@@ -20,23 +20,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - run: |
-        echo $CONTAINER_REGISTRY/nodejsapp:${{ github.sha }}
-        
-    # Authentication
+    
+     # Authentication
     - uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}	        
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - uses: azure/docker-login@v1
+      with:
+        login-server: actionregistry.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
     
-    # Authenticate to ACR and push the image
+    # Authentication
+    - run: |
+        docker build . -t actionregistry.azurecr.io/nodejsapp:${{ github.sha }}
+        docker push actionregistry.azurecr.io/nodejsapp:${{ github.sha }}
+        
+    # Provision a new Web App
     - name: Azure CLI script to create a new Web App for Container
       uses: azure/CLI@v0-beta
       with:
         azcliversion: latest
         inlineScript: |
-          az acr login --name actionregistry
-          docker build . -t actionregistry.azurecr.io/nodejsapp:${{ github.sha }}
-          docker push actionregistry.azurecr.io/nodejsapp:${{ github.sha }}
+          az account show
+          az storage -h
+          az webapp create --resource-group AZURE_RESOURCE_GROUP --plan AZURE_APP_PLAN --name AZURE_WEBAPP_NAME
           
     - uses: azure/webapps-container-deploy@v1
       with: 
