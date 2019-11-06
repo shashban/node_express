@@ -21,7 +21,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - run: |
-        echo $CONTAINER_REGISTRY/nodejsapp:${{ github.sha }
+        echo $CONTAINER_REGISTRY/nodejsapp:${{ github.sha }}
         
      # Authentication
     - uses: azure/login@v1
