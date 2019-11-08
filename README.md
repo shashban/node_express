@@ -24,22 +24,22 @@ In this lab, you will:
 
 ### Setting up the GitHub repository
 
-**Node-Express** is an example Node.js website site. Let us fork the Parts Unlimited repository to get started with this lab.
+**Node-Express** is an example Node.js web app. Let us fork this repository to get started with this lab.
 
 ## Create an Azure App Service
 
-Instead of running this locally, let's create this as a web app hosted in Azure. 
+Let's create this as a web app hosted in Azure. 
 
-1. Stop the app running locally. Click on the Azure icon in the sidebar. 
+1. Click on the Azure icon in the sidebar. 
 
 1. Click on the `+` icon to create a new app service under the **VSCode GitHub Universe HOL** subscription.
 
    ![](assets/images/create-app-service.png)
 
 
-1. Give your webapp a unique name (we recommend calling it **theCatSaidNo-{your name}**)
+1. Give your webapp a unique name (we recommend calling it **node_express-{your name}**)
 
-1. Select **Linux** as your OS and **Python 3.7** as your runtime. 
+1. Select **Linux** as your OS and **Node** as your runtime. 
 
 1. Browse to your new site! 
 
@@ -47,9 +47,7 @@ Instead of running this locally, let's create this as a web app hosted in Azure.
 
 We'll use GitHub actions to automate our deployment workflow for this web app. 
 
-1. Inside the App Service extension, right click on the name of your app service and choose "Open in Portal".
-
-1. From the Overview page, click on "Get publish profile". A publish profile is a kind of deployment credential, useful when you don't own the Azure subscription. Open the downloaded settings file in VS Code and copy the contents of the file.
+1. In the portal, Overview page, click on "Get publish profile". A publish profile is a kind of deployment credential, useful when you don't own the Azure subscription. Open the downloaded settings file in VS Code and copy the contents of the file.
 
    ![](assets/images/get-publish-profile.png)
 
@@ -59,7 +57,7 @@ We'll use GitHub actions to automate our deployment workflow for this web app.
    ![](assets/images/github-settings.png)
 
 
-1. Go to "Secrets". Create a new secret called "WebApp_PublishProfile" and paste the contents from the settings file.
+1. Go to "Secrets". Create a new secret called "AZURE_WEBAPP_PUBLISH_PROFILE" and paste the contents from the settings file.
 
    ![](assets/images/create-secret.png)
 
@@ -69,100 +67,96 @@ We'll use GitHub actions to automate our deployment workflow for this web app.
    ![](assets/images/new-action.png)
 
 
-1. Find the **Python application** template (not the Python Package one!) and select "Set up this workflow".
+1. Find the **Deploy Node.js to Azure Web App** template and select "Set up this workflow".
 
-   ![](assets/images/python-action.png)
+   ![](assets/images/node-action.png)
 
 
 1. Let's get into the details of what this workflow is doing.
 
-   - **Workflow Triggers**: Your workflow is set up to run on push events to the branch
+   - **Workflow Triggers**: Your workflow is set up to run on push events to the branch "master"
      
-     ```yaml
-        on: [push]
-     ```
+ ```yaml
+  on:
+   push:
+    branches:
+      - master
 
-     For more information, see [Events that trigger workflows](https://help.github.com/articles/events-that-trigger-workflows).
+  ```
+
+   For more information, see [Events that trigger workflows](https://help.github.com/articles/events-that-trigger-workflows).
+     
+   - **Setting up Environment Variables:** GitHub action workflows can be parameterized using environment variables. For this workflow, Configure the values for the AZURE_WEBAPP_NAME and leave the defaults as is for AZURE_WEBAPP_PACKAGE_PATH and NODE_VERSION variables     
+
+```yaml
+env:
+  AZURE_WEBAPP_NAME: your-app-name    # set this to your application's name
+  AZURE_WEBAPP_PACKAGE_PATH: '.'      # set this to the path to your web app project, defaults to the repository root
+  NODE_VERSION: '10.x'                # set this to the node version to use
+```
    
-   - **Running your jobs on hosted runners:** GitHub Actions provides hosted runners for Linux, Windows, and macOS. We specified hosted runner in our workflow as below.
+   - **Running your jobs on hosted runners:** GitHub Actions provides hosted runners for Linux, Windows, and macOS. Additionally they announced [Beta-release for self-hosted runners](https://github.blog/2019-11-05-self-hosted-runners-for-github-actions-is-now-in-beta/) which you can checkout if interested.
+   We specified hosted runner in our workflow as below. 
 
-       ```yaml
-       jobs:
-       build:
-       runs-on: ubuntu-latest
-
-      ```
+ ```yaml
+jobs:
+build-and-deploy:
+  name: Build and Deploy
+  runs-on: ubuntu-latest
+```
+   
    - **Using an action**: Actions are reusable units of code that can be built and distributed by anyone on GitHub. To use an action, you must specify the repository that contains the action.
       
-      ```yaml
-      - uses: actions/checkout@v1
-       - name: Set up Python 3.7
-         uses: actions/setup-python@v1
-         with:
-            python-version: 3.7
-      ```
+  ```yaml
+ steps:
+ - uses: actions/checkout@master
+ - name: Use Node.js ${{ env.NODE_VERSION }}
+   uses: actions/setup-node@v1
+   with:
+     node-version: ${{ env.NODE_VERSION }}
 
-   - **Running a command**: You can run commands on the job's virtual machine. We are running below python commands commands to install dependencies in our requirements.txt, lint, and test our application.
+  ```
 
-      ```yaml
-        - name: Install dependencies
-        run: 
-            python -m pip install --upgrade pip
-            pip install -r requirements.txt
-        - name: Lint with flake8
-         run: 
-            pip install flake8
-            # stop the build if there are Python syntax errors or undefined names
-            flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-            # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-            flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-        - name: Test with pytest
-         run: 
-            pip install pytest
-            pytest
-     ```
+   - **Running a command**: You can run commands on the job's virtual machine (runner). We are running below NPM commands to install dependencies build, and test our application.
+
+```yaml
+ - name: npm install, build, and test
+   run: |
+     npm install
+     npm run build --if-present
+     npm run test --if-present
+
+ ```
 
     >For workflow syntax for GitHub Actions see [here](https://help.github.com/en/github/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions)
 
-1. Now, paste these lines of code to the end of the `pythonapp.yml` file in GitHub. Change the `app-name` to the name of your web app. We are using [GitHub Azure Actions](https://github.com/Azure/actions/blob/master/README.md)to login to Azure with the publish profile stored in GitHub secrets which you created previously.
+- **Deploy to Azure web app**: Change the `app-name` to the name of your web app. We are using [GitHub Action tp deploy Azure Web App ](https://github.com/Azure/webapps-deploy)to deploy to your Azure Web app with the publish profile stored in GitHub secrets which you created previously.
 
-    ```yml
-        - uses: azure/webapps-deploy@v1
-        
-        with:
-            app-name:  # Replace with your app name
-            publish-profile: ${{ secrets.WebApp_PublishProfile }}
-    ```
+```yaml
+ - name: 'Deploy to Azure WebApp'
+   uses: azure/webapps-deploy@v1
+   with: 
+     app-name: ${{ env.AZURE_WEBAPP_NAME }}
+     publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+     package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+```
+   **For more information on GitHub Actions for Azure, refer to https://github.com/Azure/Actions **
+
+   **For more samples to get started with GitHub Action workflows to deploy to Azure, refer to https://github.com/Azure/actions-workflow-samples **
 
    ![](assets/images/add-yaml.png)
 
-1. Once you're done, click on "Start commit". Committing the file will trigger the workflow.
+- Once you're done editing the workflow by configuring the AZURE_WEBAPP_NAME, click on "Start commit". Committing the file will trigger the workflow.
 
-1. You can go back to the Actions tab, click on your workflow, and see that the workflow is queued or being deployed. Wait for the job to complete successfully.
+- You can go back to the Actions tab, click on your workflow, and see that the workflow is queued or being deployed. Wait for the job to complete successfully.
 
    ![](assets/images/workflow-complete.png)
 
 ## Test out your app!
 
-1. Back in VS Code, go to the App Service extension, and right click on your app service and click on "Browse Website". 
+1. Browse your Node app by pasting the URL of your Azure web app: https://AZURE_WEBAPP_NAME.azurewebsites.net
 
-1. Let's test our GitHub Actions workflow we just made. Add the following lines of code to `templates/home.html` in the body class, after we load in the catpaw image:
+1. Make any text change by editing the node_express/views/index.pug file and commit the change. Browse to the **Actions** tab in GitHub to view the live logs of your Action workflow which got triggered with the push of the commit.
 
-    ```html
-    <div>
-        <h1 style="text-align:center;"> Press the button!<h1>
-    </div>
-    ```
-
-    ![](assets/images/add-html-code.png)
-
-
-1. In the terminal, run the following commands:
-
-    ```cmd
-    git add .
-    git commit -m "test ci/cd"
-    git push
-    ```
-
-1. Browse back to your website!
+1.  Once the workflow successfully completes execution, browse back to your website to visualise the new chnages you introduced!
