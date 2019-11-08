@@ -22,15 +22,21 @@ In this lab, you will:
 
 1. **Microsoft Azure Account**: You will need a valid and active Azure account for this lab. If you do not have one, you can sign up for a [free trial](https://azure.microsoft.com/en-us/free/).
 
+1. Your Windows machine should have [Node.js package manager and NPM](https://nodejs.org/en/download), Visual Studio Code, and the VS [Azure App Service extension](vscode:extension/ms-azuretools.vscode-azureappservice) installed, which you can use to create, manage, and deploy Linux Web Apps on the Azure Platform as a Service (PaaS). 
+
+1. Once the extension is installed, log into your Azure account. 
+
+For this lab, you will be using the **VSCode GitHub Universe HOL** subscription.
+
 ### Setting up the GitHub repository
 
-**Node-Express** is an example Node.js web app. Let us fork this repository to get started with this lab.
+**Node-Express** is an example Node.js web app. Let us fork this repository amd clone it into VS Code to get started with this lab.
 
 ## Create an Azure App Service
 
 Let's create this as a web app hosted in Azure. 
 
-1. Click on the Azure icon in the sidebar. 
+1. Follow the tutorial [Azure Web Apps Quickstart](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-get-started-nodejs) 
 
 1. Click on the `+` icon to create a new app service under the **VSCode GitHub Universe HOL** subscription.
 
