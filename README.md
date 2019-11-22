@@ -1,3 +1,5 @@
+Deploying to https://ghatestappsb3.azurewebsites.net using Az login
+
 # Deploying a Node.js Web App using GitHub actions
 
 In this lab, you will learn to deploy a Node.js app to Azure App Service and set up a CI/CD workflow using GitHub Actions
